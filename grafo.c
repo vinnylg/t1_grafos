@@ -2,32 +2,52 @@
 #include <string.h>
 #include "grafo.h"
 
-char *getLine(FILE *input, int *end){
-    size_t max = 10;
-    char *new_line = (char *) malloc((max+1)*sizeof(char));
-    size_t i = 0;
-    char c = getc(input);
-    while(c != '\n' && c != EOF){
-        if(i >= max-1){
-            max+=10;
-            new_line=realloc(new_line,(max+1)*sizeof(char));
-        }
-        new_line[i++]=c;
-        c = getc(input);
+char *getLine(FILE *input){
+    int max = 2050; //two strings with 1024 characters and space
+    char *new_line = (char *) malloc((2050+1)*sizeof(char));
+    if ( fgets(new_line,max,input) != NULL){ //if input line pass 2050 characteres the overflow goes to next fgets
+        new_line = realloc(new_line,strlen(new_line)*sizeof(char));
+        return new_line;
+    } else{
+        free(new_line);
+        return NULL;
     }
-    new_line[i]='\0';
-    
-    if(c == EOF)
-        *end = 1;
+}
 
-    return new_line;
+void getStrings(char *line, char **str1, char **str2){
+    char *aux = strtok(line," ");
+    *str1 = (char *) malloc((strlen(aux)+1)*sizeof(char));
+    strncpy(*str1,aux,strlen(aux));
+    printf("str1-%s\n",*str1);
+    aux = strtok(NULL," ");
+    *str2 = (char *) malloc((strlen(aux)+1)*sizeof(char));
+    strncpy(*str2,aux,strlen(aux)+1);
+    printf("str2-%s\n",*str2);
 }
 
 grafo le_grafo(FILE *input){
     int end_of_file = 0;
-    int count = 1;
     while(!end_of_file){
-        printf("linha:%d -->%s\n",count++,getLine(input,&end_of_file));
+        char *line = getLine(input);
+        if (line){
+            char *str1 = NULL, *str2 = NULL;
+            getStrings(line,&str1,&str2);
+
+            vertice v1,v2;
+
+            if(str1){
+                v1 = criaVertice(str1);
+                printf("v1->nome:%s\n",v1->nome);
+            }
+            if(str2){
+                v2 = criaVertice(str2);
+                printf("v2->nome:%s\n",v2->nome);
+            }
+
+            //if(v1 && v2)
+              //  makeNeighbour(v1,v2);
+        }else
+            end_of_file = 1;
     }
     return NULL;
 } 

@@ -33,7 +33,9 @@ struct grafo{
     vertice *vertices;
 };
 
-char *getLine(FILE *input, int *end);
+char *getLine(FILE *input);
+
+void getStrings(char *line, char **str1, char **str2);
 
 vertice criaVertice(char *nome);
 
