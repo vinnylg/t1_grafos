@@ -6,49 +6,126 @@ char *getLine(FILE *input){
     int max = 2050; //two strings with 1024 characters and space
     char *new_line = (char *) malloc((2050+1)*sizeof(char));
     if ( fgets(new_line,max,input) != NULL){ //if input line pass 2050 characteres the overflow goes to next fgets
-        new_line = realloc(new_line,strlen(new_line)*sizeof(char));
+        new_line = realloc(new_line,strlen(new_line)*sizeof(char)); //realloc to size of line
+        if(new_line[strlen(new_line)-1]=='\n'){ //remove enter character
+            new_line[strlen(new_line)-1]='\0';  //putting null character
+        }
+        // if(strlen(new_line)==0){ //if line is empty
+        //     free(new_line);
+        //     new_line = NULL;
+        // };
         return new_line;
     } else{
-        free(new_line);
+        free(new_line); //is the end of file
         return NULL;
     }
 }
 
-void getStrings(char *line, char **str1, char **str2){
-    char *aux = strtok(line," ");
-    *str1 = (char *) malloc((strlen(aux)+1)*sizeof(char));
-    strncpy(*str1,aux,strlen(aux));
-    printf("str1-%s\n",*str1);
-    aux = strtok(NULL," ");
-    *str2 = (char *) malloc((strlen(aux)+1)*sizeof(char));
-    strncpy(*str2,aux,strlen(aux)+1);
-    printf("str2-%s\n",*str2);
+char *splitStr(char **str){
+    char *aux = *str;
+    for(size_t i=0; i < strlen(aux); i++){
+        if(aux[i]==' '){           //if space exists then have two vertice, making an edge
+            aux[i]='\0';           //first string end in space 
+            return &aux[i+1];      //return the second string that start after the space
+        };
+    };
+    return NULL;                    //if ran all string and not found a space
+};
+
+
+vertice insereVertice(grafo g, vertice v){
+    if(g->vertices==NULL){          //if there isn't any vertice
+        g->vertices=v;              
+    }
+    else{
+        vertice aux = g->vertices;  //else find the end of list
+        if(strcmp(aux->nome,v->nome)==0){ // if already have the vertice v
+            free(v);
+            return aux; //return pointer to vertice v in graph
+        }
+        while(aux->next!=NULL){
+            aux = aux->next;
+            if(strcmp(aux->nome,v->nome)==0){ // if already have the vertice v
+                free(v);
+                return aux; //return pointer to vertice v in graph
+            }
+        }                           //and make the last vertice of list poiter to new
+        aux->next = v;
+    }
+    return v; // return the new vertice
 }
 
-grafo le_grafo(FILE *input){
-    int end_of_file = 0;
-    while(!end_of_file){
-        char *line = getLine(input);
-        if (line){
-            char *str1 = NULL, *str2 = NULL;
-            getStrings(line,&str1,&str2);
-
-            vertice v1,v2;
-
-            if(str1){
-                v1 = criaVertice(str1);
-                printf("v1->nome:%s\n",v1->nome);
-            }
-            if(str2){
-                v2 = criaVertice(str2);
-                printf("v2->nome:%s\n",v2->nome);
-            }
-
-            //if(v1 && v2)
-              //  makeNeighbour(v1,v2);
-        }else
-            end_of_file = 1;
+void insereVizinho(vertice v, node n){
+    if(v->vizinhos==NULL){          //the same thing that insertVertice, but with node
+        v->vizinhos=n;
     }
+    else{
+        node aux = v->vizinhos;
+        if(aux->vertice==n->vertice){
+            free(n);
+            return;
+        }
+        while(aux->next!=NULL){
+            aux = aux->next;
+            if(aux->vertice==n->vertice){
+                free(n);
+                return;
+            }
+        }
+        aux->next = n;
+    };
+}
+
+node criaNode(vertice vizinho){  // i don't need explain this shit
+    node n = (node) malloc(sizeof(struct node));
+    n->vertice = vizinho;
+    n->next = NULL;
+    return n;    
+}
+
+
+void printVertices(grafo g){     //neither this
+    vertice aux = g->vertices;
+    while(aux!=NULL){
+        printf("%s: ",aux->nome);
+        printVizinhos(aux);
+        aux=aux->next;
+    }
+}
+
+void printVizinhos(vertice v){
+    node aux = v->vizinhos;
+    while(aux!=NULL){
+        printf("%s%c",aux->vertice->nome,aux->next?'-':' '); //to print the neighbour side by side with hifen
+        aux=aux->next;
+    }
+    printf("\n");
+}
+
+
+grafo le_grafo(FILE *input){
+    grafo newGraph = (grafo) malloc(sizeof(struct grafo));
+    newGraph->vertices = NULL;
+    newGraph->nVertices = 0;
+
+    char *str = getLine(input);
+    while(str){
+        char *str2 = splitStr(&str);
+
+        vertice v1 = criaVertice(str);
+        v1 = insereVertice(newGraph,v1);
+
+        if(str2){
+            vertice v2 = criaVertice(str2);
+            v2 = insereVertice(newGraph,v2);
+            
+            insereVizinho(v1,criaNode(v2));
+            insereVizinho(v2,criaNode(v1));
+        }
+        
+        str = getLine(input);
+    }
+    printVertices(newGraph);
     return NULL;
 } 
 
@@ -56,5 +133,6 @@ vertice criaVertice(char *nome){
     vertice newVertice = (vertice) malloc(sizeof(struct vertice));
     newVertice->nome = nome;
     newVertice->vizinhos = NULL;
+    newVertice->next = NULL;
     return newVertice;
 };

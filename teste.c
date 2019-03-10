@@ -5,7 +5,8 @@
 
 int main(void) {
 
-  grafo g = le_grafo(stdin);
+  //grafo g = 
+  le_grafo(stdin);
 
   // if ( !g )
 
