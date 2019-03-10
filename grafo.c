@@ -3,15 +3,12 @@
 #include "grafo.h"
 
 int temVizinhoComum(vertice a, vertice b){
-    printf("temVizinhoComum(%s,%s)\n",a->nome,b->nome);
     node va, vb;
     va = a->vizinhos; 
     vb = b->vizinhos;
     while(va!=NULL){                      
         while(vb!=NULL){
-            printf("vizinhosComum?: %s == %s\n",va->vertice->nome,vb->vertice->nome);
             if(va->vertice==vb->vertice){
-                printf("%s e %s  tem vizinhos em comum\n",a->nome,b->nome);                
                 return 1;
             }
             vb = vb->next;
@@ -19,22 +16,17 @@ int temVizinhoComum(vertice a, vertice b){
         vb = b->vizinhos;
         va = va->next;
     }
-    printf("%s e %s NÃO tem vizinhos em comum\n",a->nome,b->nome);
     return 0;
 }
 
 int ehVizinho(vertice a, vertice b){
-    printf("ehVizinho(%s,%s)\n",a->nome,b->nome);
     node aux = a->vizinhos;
     while (aux!=NULL){
-        printf("sao vizinhos?: %s == %s\n",aux->vertice->nome,b->nome);
         if(aux->vertice==b){
-            printf("%s e %s são vizinhos\n",a->nome,b->nome);
             return 1;
         }
         aux = aux->next;
     }
-    printf("%s e %s NÃo são vizinhos\n",a->nome,b->nome);
     return 0;
 }
 
@@ -47,27 +39,17 @@ double coeficiente_agrupamento_grafo(grafo g){
     u = g->vertices; //received the first vertice of graph
     while(u!=NULL){     //goes vertice by vertice 
         v = u->next;    //received the next vertice of a
-        printf("|u-> ");
-        printVertices(u);
-        printf("|v-> ");
-        printVertices(v);
         while(v!=NULL){                       //goes vertice by vertice after a to end
             if(temVizinhoComum(u,v)){           
                 if(ehVizinho(u,v)){
-                    triade_fechada++;
-                    printf("triade_fechada:%d\n",triade_fechada);  
+                    triade_fechada++; 
                 }else{
                     triade_aberta++;
-                    printf("triade_aberta:%d\n",triade_aberta);  
                 }
             }
             v = v->next;                       
-            printf("|v-> ");
-            printVertices(v);
-            printf(".........................................................\n");
         };
         u = u->next;
-        printf("------------------------------------------------------\n");                           
     };
 
     printf("triades_fechada:%d triades_aberta:%d\n",triade_fechada,triade_aberta);
