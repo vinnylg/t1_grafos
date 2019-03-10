@@ -2,6 +2,82 @@
 #include <string.h>
 #include "grafo.h"
 
+int temVizinhoComum(vertice a, vertice b){
+    printf("temVizinhoComum(%s,%s)\n",a->nome,b->nome);
+    node va, vb;
+    va = a->vizinhos; 
+    vb = b->vizinhos;
+    while(va!=NULL){                      
+        while(vb!=NULL){
+            printf("vizinhosComum?: %s == %s\n",va->vertice->nome,vb->vertice->nome);
+            if(va->vertice==vb->vertice){
+                printf("%s e %s  tem vizinhos em comum\n",a->nome,b->nome);                
+                return 1;
+            }
+            vb = vb->next;
+        }
+        vb = b->vizinhos;
+        va = va->next;
+    }
+    printf("%s e %s NÃO tem vizinhos em comum\n",a->nome,b->nome);
+    return 0;
+}
+
+int ehVizinho(vertice a, vertice b){
+    printf("ehVizinho(%s,%s)\n",a->nome,b->nome);
+    node aux = a->vizinhos;
+    while (aux!=NULL){
+        printf("sao vizinhos?: %s == %s\n",aux->vertice->nome,b->nome);
+        if(aux->vertice==b){
+            printf("%s e %s são vizinhos\n",a->nome,b->nome);
+            return 1;
+        }
+        aux = aux->next;
+    }
+    printf("%s e %s NÃo são vizinhos\n",a->nome,b->nome);
+    return 0;
+}
+
+double coeficiente_agrupamento_grafo(grafo g){
+    int triade_fechada = 0;
+    int triade_aberta = 0;
+
+    vertice u,v;
+
+    u = g->vertices; //received the first vertice of graph
+    while(u!=NULL){     //goes vertice by vertice 
+        v = u->next;    //received the next vertice of a
+        printf("|u-> ");
+        printVertices(u);
+        printf("|v-> ");
+        printVertices(v);
+        while(v!=NULL){                       //goes vertice by vertice after a to end
+            if(temVizinhoComum(u,v)){           
+                if(ehVizinho(u,v)){
+                    triade_fechada++;
+                    printf("triade_fechada:%d\n",triade_fechada);  
+                }else{
+                    triade_aberta++;
+                    printf("triade_aberta:%d\n",triade_aberta);  
+                }
+            }
+            v = v->next;                       
+            printf("|v-> ");
+            printVertices(v);
+            printf(".........................................................\n");
+        };
+        u = u->next;
+        printf("------------------------------------------------------\n");                           
+    };
+
+    printf("triades_fechada:%d triades_aberta:%d\n",triade_fechada,triade_aberta);
+
+    if(triade_fechada+triade_aberta==0)
+        return 0;
+    
+    return (double)triade_fechada/(double)(triade_aberta+triade_fechada); 
+}
+
 char *getLine(FILE *input){
     int max = 2050; //two strings with 1024 characters and space
     char *new_line = (char *) malloc((2050+1)*sizeof(char));
@@ -84,13 +160,22 @@ node criaNode(vertice vizinho){  // i don't need explain this shit
 }
 
 
-void printVertices(grafo g){     //neither this
+void printGrafo(grafo g){     //neither this
     vertice aux = g->vertices;
     while(aux!=NULL){
         printf("%s: ",aux->nome);
         printVizinhos(aux);
         aux=aux->next;
     }
+}
+
+void printVertices(vertice v){     //neither this
+    vertice aux = v;
+    while(aux!=NULL){
+        printf("%s ",aux->nome);
+        aux=aux->next;
+    }
+    printf("\n");
 }
 
 void printVizinhos(vertice v){
@@ -109,24 +194,24 @@ grafo le_grafo(FILE *input){
     newGraph->nVertices = 0;
 
     char *str = getLine(input);
-    while(str){
-        char *str2 = splitStr(&str);
+    while(str){ //while have str
+        char *str2 = splitStr(&str); //trynna split if it have a space, or return null
 
         vertice v1 = criaVertice(str);
-        v1 = insereVertice(newGraph,v1);
+        v1 = insereVertice(newGraph,v1); //insert new vertice, return the poiter if it's already exist 
 
-        if(str2){
-            vertice v2 = criaVertice(str2);
+        if(str2){                              //if have second vertice
+            vertice v2 = criaVertice(str2);     
             v2 = insereVertice(newGraph,v2);
             
-            insereVizinho(v1,criaNode(v2));
+            insereVizinho(v1,criaNode(v2));     //make neighbourhood
             insereVizinho(v2,criaNode(v1));
         }
         
         str = getLine(input);
     }
-    printVertices(newGraph);
-    return NULL;
+    printGrafo(newGraph);
+    return newGraph;
 } 
 
 vertice criaVertice(char *nome){

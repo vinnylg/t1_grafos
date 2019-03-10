@@ -41,7 +41,9 @@ vertice criaVertice(char *nome);
 
 vertice insereVertice(grafo g, vertice v);
 
-void printVertices(grafo g);
+void printGrafo(grafo g);
+
+void printVertices(vertice v);
 
 void printVizinhos(vertice v);
 
@@ -86,6 +88,10 @@ grafo escreve_grafo(FILE *output, grafo g);
 // 
 
 double coeficiente_agrupamento_grafo(grafo g);
+
+int temVizinhoComum(vertice a, vertice b);
+
+int ehVizinho(vertice a, vertice b);
 
 //------------------------------------------------------------------------------
 #endif
