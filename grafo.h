@@ -14,7 +14,6 @@ typedef struct vertice *vertice;
 
 struct grafo{
     vertice vertices;
-    size_t nVertices;
 };
 
 //------------------------------------------------------------------------------
@@ -50,6 +49,10 @@ void printVizinhos(vertice v);
 node criaNode(vertice vizinho);
 
 void insereVizinho(vertice v, node n);
+
+void freeNodes(node n);
+
+void freeVertices(vertice v);
 
 
 //------------------------------------------------------------------------------

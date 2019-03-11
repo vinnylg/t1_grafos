@@ -4,7 +4,6 @@
 //------------------------------------------------------------------------------
 
 int main(void) {
-
   grafo g = le_grafo(stdin);
 
   if ( !g )
@@ -12,5 +11,5 @@ int main(void) {
 
   printf ("O coeficiente de agrupamento do grafo é %f\n", coeficiente_agrupamento_grafo(g));
 
-  // return ! destroi_grafo(g);
+   return ! destroi_grafo(g);
 }

@@ -84,7 +84,12 @@ char *splitStr(char **str){
     for(size_t i=0; i < strlen(aux); i++){
         if(aux[i]==' '){           //if space exists then have two vertice, making an edge
             aux[i]='\0';           //first string end in space 
-            return &aux[i+1];      //return the second string that start after the space
+            char *aux2 = &aux[i+1];  //second string become here
+            char *str2 = (char *) malloc((strlen(aux2)+1)*sizeof(char)); //alloc new space for new string
+            for(size_t j=0; j <= strlen(aux2); j++)                 // copy this shit manually because strcpy is a large shit
+                str2[j]=aux2[j];
+            aux = realloc(aux,strlen(aux)*sizeof(char));    //remove memory of second string from poiter of first
+            return str2;      //return the second string that start after the space
         };
     };
     return NULL;                    //if ran all string and not found a space
@@ -173,12 +178,11 @@ void printVizinhos(vertice v){
 grafo le_grafo(FILE *input){
     grafo newGraph = (grafo) malloc(sizeof(struct grafo));
     newGraph->vertices = NULL;
-    newGraph->nVertices = 0;
 
     char *str = getLine(input);
     while(str){ //while have str
         char *str2 = splitStr(&str); //trynna split if it have a space, or return null
-
+        
         vertice v1 = criaVertice(str);
         v1 = insereVertice(newGraph,v1); //insert new vertice, return the poiter if it's already exist 
 
@@ -194,7 +198,7 @@ grafo le_grafo(FILE *input){
     }
     printGrafo(newGraph);
     return newGraph;
-} 
+}; 
 
 vertice criaVertice(char *nome){
     vertice newVertice = (vertice) malloc(sizeof(struct vertice));
@@ -202,4 +206,30 @@ vertice criaVertice(char *nome){
     newVertice->vizinhos = NULL;
     newVertice->next = NULL;
     return newVertice;
+};
+
+
+void freeNodes(node n){
+    if(n!=NULL){
+        if (n->next!=NULL)
+            freeNodes(n->next);        
+        free(n);
+    }
+};
+
+void freeVertices(vertice v){
+    if(v!=NULL){
+        if (v->next!=NULL)
+            freeVertices(v->next);  
+        free(v->nome);
+        freeNodes(v->vizinhos);
+        free(v);
+    }
+};
+
+
+int destroi_grafo(grafo g){
+    freeVertices(g->vertices);
+    free(g);
+    return 1;
 };
