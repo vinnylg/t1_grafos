@@ -103,12 +103,14 @@ vertice insereVertice(grafo g, vertice v){
     else{
         vertice aux = g->vertices;  //else find the end of list
         if(strcmp(aux->nome,v->nome)==0){ // if already have the vertice v
+            free(v->nome);
             free(v);
             return aux; //return pointer to vertice v in graph
         }
         while(aux->next!=NULL){
             aux = aux->next;
             if(strcmp(aux->nome,v->nome)==0){ // if already have the vertice v
+                free(v->nome);
                 free(v);
                 return aux; //return pointer to vertice v in graph
             }
