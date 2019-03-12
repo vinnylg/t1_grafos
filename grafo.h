@@ -34,7 +34,7 @@ struct node{
 
 char *getLine(FILE *input);
 
-char *splitStr(char **str);
+int *splitStr(char *line, char **str1, char **str2);
 
 vertice criaVertice(char *nome);
 

@@ -79,20 +79,25 @@ char *getLine(FILE *input){
     }
 }
 
-char *splitStr(char **str){
-    char *aux = *str;
-    for(size_t i=0; i < strlen(aux); i++){
-        if(aux[i]==' '){           //if space exists then have two vertice, making an edge
-            aux[i]='\0';           //first string end in space 
-            char *aux2 = &aux[i+1];  //second string become here
-            char *str2 = (char *) malloc((strlen(aux2)+1)*sizeof(char)); //alloc new space for new string
-            for(size_t j=0; j <= strlen(aux2); j++)                 // copy this shit manually because strcpy is a large shit
-                str2[j]=aux2[j];
-            aux = realloc(aux,strlen(aux)*sizeof(char));    //remove memory of second string from poiter of first
-            return str2;      //return the second string that start after the space
-        };
+int *splitStr(char *line, char **str1, char **str2){
+    for(size_t i=0; i < strlen(line); i++){
+        if(line[i]==' '){
+            *str1 = (char *) malloc((i+1)*sizeof(char));
+            *str1[i]='\0';  
+            for(size_t j = i-1; j >=0; j--)
+                *str1[j]=line[j];
+
+            *str2 = (char *) malloc((strlen(line)-i)*sizeof(char));
+            i++;
+            for(size_t k = 0; k < (strlen(line)-i-1) ; k++)
+                *str2[k]=line[i+k];
+            
+            free(line);
+
+            return 2;
+        }
     };
-    return NULL;                    //if ran all string and not found a space
+    return 1;
 };
 
 
@@ -181,11 +186,12 @@ grafo le_grafo(FILE *input){
     grafo newGraph = (grafo) malloc(sizeof(struct grafo));
     newGraph->vertices = NULL;
 
-    char *str = getLine(input);
-    while(str){ //while have str
-        char *str2 = splitStr(&str); //trynna split if it have a space, or return null
+    char *line = getLine(input);
+    while(line){ //while have str
+        char *str1 = NULL, str2 = NULL;
+        splitStr(line,&str1,&str2); //trynna split if it have a space, or return null
         
-        vertice v1 = criaVertice(str);
+        vertice v1 = criaVertice(str1);
         v1 = insereVertice(newGraph,v1); //insert new vertice, return the poiter if it's already exist 
 
         if(str2){                              //if have second vertice
@@ -196,7 +202,7 @@ grafo le_grafo(FILE *input){
             insereVizinho(v2,criaNode(v1));
         }
         
-        str = getLine(input);
+        line = getLine(input);
     }
     printGrafo(newGraph);
     return newGraph;
