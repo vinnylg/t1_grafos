@@ -64,7 +64,7 @@ char *getLine(FILE *input){
     int max = 2050; //two strings with 1024 characters and space
     char *new_line = (char *) malloc((2050+1)*sizeof(char));
     if ( fgets(new_line,max,input) != NULL){ //if input line pass 2050 characteres the overflow goes to next fgets
-        new_line = realloc(new_line,strlen(new_line)*sizeof(char)); //realloc to size of line
+        new_line = realloc(new_line,(strlen(new_line)+1)*sizeof(char)); //realloc to size of line
         if(new_line[strlen(new_line)-1]=='\n') //remove enter character
             new_line[strlen(new_line)-1]='\0';  //putting null character
         return new_line;
@@ -74,10 +74,12 @@ char *getLine(FILE *input){
     }
 }
 
+// fazer uma funcao de verificação para todos os caracteres não permitidos
+
 size_t haveTwoString(char *line){
     for(size_t i=0; line[i]!='\0'; i++)
         if(line[i]==' '){
-            if(line[i+1]=='\0'){
+            if(line[i+1]=='\0' || line[i+1]==' '){
                 line[i]='\0';
                 return 0;
             }
@@ -97,13 +99,13 @@ void splitStr(char *line, char **c1, char **c2){
             str1[i]=line[i];
         }
         str1[i]='\0';
-        str1 = realloc(str1,i*sizeof(char));
+        str1 = realloc(str1,(i+1)*sizeof(char));
         size_t j,k;
-        for(j=index_space+1, k=0; j < strlen(line) && line[j]!=' '; j++, k++){
+        for(j=index_space+1, k=0; line[j]!='\0' && line[j]!=' '; j++, k++){
             str2[k]=line[j];
         }
         str2[k]='\0';
-        str2 = realloc(str2,k*sizeof(char));
+        str2 = realloc(str2,(k+1)*sizeof(char));
 
         free(line);
 
