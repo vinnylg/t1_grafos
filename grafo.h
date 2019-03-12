@@ -32,9 +32,11 @@ struct node{
     node next;
 };
 
+size_t haveTwoString(char *line);
+
 char *getLine(FILE *input);
 
-char *splitStr(char **str);
+void splitStr(char *line, char **c1, char **c2);
 
 vertice criaVertice(char *nome);
 

@@ -65,13 +65,8 @@ char *getLine(FILE *input){
     char *new_line = (char *) malloc((2050+1)*sizeof(char));
     if ( fgets(new_line,max,input) != NULL){ //if input line pass 2050 characteres the overflow goes to next fgets
         new_line = realloc(new_line,strlen(new_line)*sizeof(char)); //realloc to size of line
-        if(new_line[strlen(new_line)-1]=='\n'){ //remove enter character
+        if(new_line[strlen(new_line)-1]=='\n') //remove enter character
             new_line[strlen(new_line)-1]='\0';  //putting null character
-        }
-        // if(strlen(new_line)==0){ //if line is empty
-        //     free(new_line);
-        //     new_line = NULL;
-        // };
         return new_line;
     } else{
         free(new_line); //is the end of file
@@ -79,20 +74,45 @@ char *getLine(FILE *input){
     }
 }
 
-char *splitStr(char **str){
-    char *aux = *str;
-    for(size_t i=0; i < strlen(aux); i++){
-        if(aux[i]==' '){           //if space exists then have two vertice, making an edge
-            aux[i]='\0';           //first string end in space 
-            char *aux2 = &aux[i+1];  //second string become here
-            char *str2 = (char *) malloc((strlen(aux2)+1)*sizeof(char)); //alloc new space for new string
-            for(size_t j=0; j <= strlen(aux2); j++)                 // copy this shit manually because strcpy is a large shit
-                str2[j]=aux2[j];
-            aux = realloc(aux,strlen(aux)*sizeof(char));    //remove memory of second string from poiter of first
-            return str2;      //return the second string that start after the space
-        };
-    };
-    return NULL;                    //if ran all string and not found a space
+size_t haveTwoString(char *line){
+    for(size_t i=0; line[i]!='\0'; i++)
+        if(line[i]==' '){
+            if(line[i+1]=='\0'){
+                line[i]='\0';
+                return 0;
+            }
+            else
+                return i;
+        }
+    return 0;
+}
+
+void splitStr(char *line, char **c1, char **c2){
+    size_t index_space = haveTwoString(line); //return 0 if doesn't have two string
+    if(index_space){
+        char *str1 = (char *) malloc(1025*sizeof(char));
+        char *str2 = (char *) malloc(1025*sizeof(char));
+        size_t i;
+        for(i=0; i<index_space; i++){
+            str1[i]=line[i];
+        }
+        str1[i]='\0';
+        str1 = realloc(str1,i*sizeof(char));
+        size_t j,k;
+        for(j=index_space+1, k=0; j < strlen(line) && line[j]!=' '; j++, k++){
+            str2[k]=line[j];
+        }
+        str2[k]='\0';
+        str2 = realloc(str2,k*sizeof(char));
+
+        free(line);
+
+        *c1 = str1;
+        *c2 = str2;
+    }else{
+        if(strlen(line))
+            *c1 = line;
+    }
 };
 
 
@@ -181,22 +201,27 @@ grafo le_grafo(FILE *input){
     grafo newGraph = (grafo) malloc(sizeof(struct grafo));
     newGraph->vertices = NULL;
 
-    char *str = getLine(input);
-    while(str){ //while have str
-        char *str2 = splitStr(&str); //trynna split if it have a space, or return null
+    char *line = getLine(input);
+    while(line){ //while have str
+        char *str1 = NULL, *str2 = NULL;
+        splitStr(line,&str1,&str2);
         
-        vertice v1 = criaVertice(str);
-        v1 = insereVertice(newGraph,v1); //insert new vertice, return the poiter if it's already exist 
-
-        if(str2){                              //if have second vertice
-            vertice v2 = criaVertice(str2);     
-            v2 = insereVertice(newGraph,v2);
-            
-            insereVizinho(v1,criaNode(v2));     //make neighbourhood
-            insereVizinho(v2,criaNode(v1));
+        vertice v1,v2;
+        
+        if(str1){
+            v1 = criaVertice(str1);
+            v1 = insereVertice(newGraph,v1); //insert new vertice, return the poiter if it's already exist 
+        
+            if(str2){                              //if have second vertice
+                v2 = criaVertice(str2);     
+                v2 = insereVertice(newGraph,v2);
+                
+                insereVizinho(v1,criaNode(v2));     //make neighbourhood
+                insereVizinho(v2,criaNode(v1));
+            }
         }
-        
-        str = getLine(input);
+
+        line = getLine(input);
     }
     printGrafo(newGraph);
     return newGraph;
