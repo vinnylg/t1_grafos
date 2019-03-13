@@ -9,53 +9,13 @@
 // o grafo tem um nome, que é uma "string"
 
 typedef struct grafo *grafo;
-typedef struct node *node;
-typedef struct vertice *vertice;
-
-struct grafo{
-    vertice vertices;
-};
 
 //------------------------------------------------------------------------------
 // (apontador para) estrutura de dados para representar um vértice
 // 
 // o vértice tem um nome, que é uma "string"
 
-struct vertice{
-    char *nome;
-    vertice next;
-    node vizinhos;
-};
-
-struct node{
-    vertice vertice;
-    node next;
-};
-
-size_t haveTwoString(char *line);
-
-char *getLine(FILE *input);
-
-void splitStr(char *line, char **c1, char **c2);
-
-vertice criaVertice(char *nome);
-
-vertice insereVertice(grafo g, vertice v);
-
-void printGrafo(grafo g);
-
-void printVertices(vertice v);
-
-void printVizinhos(vertice v);
-
-node criaNode(vertice vizinho);
-
-void insereVizinho(vertice v, node n);
-
-void freeNodes(node n);
-
-void freeVertices(vertice v);
-
+typedef struct vertice *vertice;
 
 //------------------------------------------------------------------------------
 // desaloca toda a memória usada em *g
@@ -63,7 +23,6 @@ void freeVertices(vertice v);
 // devolve 1 em caso de sucesso,
 //         ou 
 //         0, caso contrário
-
 
 int destroi_grafo(grafo g);
 
@@ -93,10 +52,6 @@ grafo escreve_grafo(FILE *output, grafo g);
 // 
 
 double coeficiente_agrupamento_grafo(grafo g);
-
-int temVizinhoComum(vertice a, vertice b);
-
-int ehVizinho(vertice a, vertice b);
 
 //------------------------------------------------------------------------------
 #endif
