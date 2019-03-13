@@ -24,21 +24,6 @@ typedef struct vertice *vertice;
 //         ou 
 //         0, caso contrário
 
-struct vertice{
-    char *nome;
-    vertice *vizinhos;
-};
-
-struct grafo{
-    vertice *vertices;
-};
-
-char *getLine(FILE *input);
-
-void getStrings(char *line, char **str1, char **str2);
-
-vertice criaVertice(char *nome);
-
 int destroi_grafo(grafo g);
 
 //------------------------------------------------------------------------------
