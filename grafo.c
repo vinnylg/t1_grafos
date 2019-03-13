@@ -6,17 +6,19 @@ int temVizinhoComum(vertice a, vertice b){
     node va, vb;
     va = a->vizinhos; 
     vb = b->vizinhos;
+    int nv = 0;
     while(va!=NULL){                      
         while(vb!=NULL){
             if(va->vertice==vb->vertice){
-                return 1;
+                printf("%s -> %s <- %s\n",a->nome,va->vertice->nome,b->nome);
+                nv++;
             }
             vb = vb->next;
         }
         vb = b->vizinhos;
         va = va->next;
     }
-    return 0;
+    return nv;
 }
 
 int ehVizinho(vertice a, vertice b){
@@ -30,21 +32,38 @@ int ehVizinho(vertice a, vertice b){
     return 0;
 }
 
+grafo escreve_grafo(FILE *output, grafo g){
+    vertice aux = g->vertices;
+    while(aux){
+        node n = aux->vizinhos;
+        if(aux->vizinhos==NULL)
+            fprintf(output,"%s\n",aux->nome);
+        while(n){
+            fprintf(output,"%s %s\n",aux->nome,n->vertice->nome);
+            n=n->next;
+        }
+        aux=aux->next;
+    }
+    return g;
+}
+
 double coeficiente_agrupamento_grafo(grafo g){
     int triade_fechada = 0;
     int triade_aberta = 0;
-
+    int nv;
     vertice u,v;
 
     u = g->vertices; //received the first vertice of graph
     while(u!=NULL){     //goes vertice by vertice 
         v = u->next;    //received the next vertice of a
         while(v!=NULL){                       //goes vertice by vertice after a to end
-            if(temVizinhoComum(u,v)){           
+            if((nv = temVizinhoComum(u,v))){           
                 if(ehVizinho(u,v)){
-                    triade_fechada++; 
+                    printf("%s - %s\n",u->nome,v->nome);
+                    triade_fechada+=nv; 
                 }else{
-                    triade_aberta++;
+                    printf("%s x %s\n",u->nome,v->nome);
+                    triade_aberta+=nv;
                 }
             }
             v = v->next;                       
