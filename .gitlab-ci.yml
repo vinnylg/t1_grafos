@@ -1,0 +1,23 @@
+image: debian:8
+
+cache:
+    paths:
+        - node_modules
+
+stages:
+    - compile
+
+run_test:
+    stage: compile
+    before_script:
+      - apt-get update -qq && apt-get install -y -qq gcc valgrind make
+    script:
+        - cd src/
+        - make
+        - valgrind  --leak-check=full ./teste < testes/0.000000.txt
+        - ./testes/test.sh
+
+    tags:
+        - build
+        - debian
+        - regular
