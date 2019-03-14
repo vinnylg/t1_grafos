@@ -1,5 +1,4 @@
 CFLAGS  = -std=c99 \
-	  -no-pie \
 	  -pipe \
 	  -ggdb3 -Wstrict-overflow=5 -fstack-protector-all \
           -W -Wall -Wextra \
