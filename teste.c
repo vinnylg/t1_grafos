@@ -11,8 +11,9 @@ int main(void) {
 
   printf ("O coeficiente de agrupamento do grafo é %f\n", coeficiente_agrupamento_grafo(g));
 
-  FILE *output = fopen("saida","w");
-  escreve_grafo(output,g);
+  // FILE *output = fopen("saida","w");
+  // escreve_grafo(output,g);
+  // fclose(output);
 
   return ! destroi_grafo(g);
 }
